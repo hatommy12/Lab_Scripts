@@ -1,0 +1,37 @@
+set year=2022
+
+@echo off
+title copy
+echo press any key to continue
+pause
+cd CSV-Files-Dump-Here
+
+
+echo Monthly Pos QC > C:\Users\UDX\Desktop\monthly-pos-qc/monthly-pos.csv
+FOR /L %%d IN (1,1,31) DO (
+
+	if %%d lss 10 (	
+		copy *0%%d%year%*.csv export-0%%d%year%.csv
+		findstr /N /I "POS QC"* export-0%%d%year%.csv | findstr /I "SARS-CoV-2" | sort > pos-0%%d%year%.csv
+
+		echo ,","%%d >> C:\Users\UDX\Desktop\monthly-pos-qc/monthly-pos.csv
+		FOR /F "tokens=4,9 delims=," %%A IN (pos-0%%d%year%.csv) DO (
+			ECHO %%A, %%B >> C:\Users\UDX\Desktop\monthly-pos-qc/monthly-pos.csv
+		)
+		del export-0%%d%year%.csv pos-0%%d%year%.csv
+	) else (
+		copy *%%d%year%*.csv export-%%d%year%.csv
+		findstr /N /I "POS QC"* export-%%d%year%.csv | findstr /I "SARS-CoV-2" | sort > pos-%%d%year%.csv
+
+		echo ,","%%d >> C:\Users\UDX\Desktop\monthly-pos-qc/monthly-pos.csv
+		FOR /F "tokens=4,9 delims=," %%A IN (pos-%%d%year%.csv) DO (
+			ECHO %%A, %%B >> C:\Users\UDX\Desktop\monthly-pos-qc/monthly-pos.csv
+		)
+		del export-%%d%year%.csv pos-%%d%year%.csv
+	)
+
+)
+
+
+echo done
+pause
